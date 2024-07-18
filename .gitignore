@@ -51,3 +51,7 @@ app.*.map.json
 
 # Windows
 /windows
+
+# Config
+firebase.json
+/lib/firebase_options.dart
