@@ -16,7 +16,10 @@ class _AddBookState extends State<AddBook> {
   int year = 0;
   double rating = 0;
 
-  final controller = TextEditingController();
+  final titleController = TextEditingController();
+  final authorController = TextEditingController();
+  final monthController = TextEditingController();
+  final yearController = TextEditingController();
 
   void resetEntries() {
     title = "";
@@ -64,7 +67,7 @@ class _AddBookState extends State<AddBook> {
                 child: Column(
                   children: <Widget>[
                     TextFormField(
-                      controller: controller,
+                      controller: titleController,
                       decoration: const InputDecoration(labelText: 'Title'),
                       keyboardType: TextInputType.name,
                       onChanged: (value) {
@@ -74,13 +77,12 @@ class _AddBookState extends State<AddBook> {
                       },
                     ),
                     TextFormField(
-                      controller: controller,
+                      controller: authorController,
                       decoration: const InputDecoration(labelText: 'Author'),
                       keyboardType: TextInputType.name,
                       onChanged: (value) {
                         setState(() {
                           author = value;
-                          controller.clear();
                         });
                       },
                     ),
@@ -88,7 +90,7 @@ class _AddBookState extends State<AddBook> {
                       children: [
                         Expanded(
                           child: TextFormField(
-                            controller: controller,
+                            controller: monthController,
                             decoration:
                                 const InputDecoration(labelText: 'Month'),
                             keyboardType: TextInputType.number,
@@ -104,7 +106,7 @@ class _AddBookState extends State<AddBook> {
                         ),
                         Expanded(
                           child: TextFormField(
-                            controller: controller,
+                            controller: yearController,
                             decoration:
                                 const InputDecoration(labelText: 'Year'),
                             keyboardType: TextInputType.number,
@@ -135,7 +137,10 @@ class _AddBookState extends State<AddBook> {
                       foregroundColor: const Color.fromARGB(255, 241, 135, 70),
                       onPressed: () {
                         _submit();
-                        controller.clear();
+                        titleController.clear();
+                        authorController.clear();
+                        monthController.clear();
+                        yearController.clear();
                       },
                       child: const Icon(Icons.add),
                     ),
