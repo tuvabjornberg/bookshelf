@@ -1,12 +1,11 @@
-import 'package:bookshelf/addBook/mainAddBook.dart';
-import 'package:bookshelf/bookshelf/mainBookShelf.dart';
-import 'package:bookshelf/profile/mainProfile.dart';
+import 'package:bookshelf/addBook/add_book.dart';
+import 'package:bookshelf/bookshelf/user_bookshelf.dart';
+import 'package:bookshelf/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
   runApp(const MainApp());
@@ -25,7 +24,6 @@ class MainApp extends StatefulWidget {
 class _MyAppPageState extends State<MainApp> {
   int index = 0;
   final screens = [const BookShelf(), const AddBook(), const Profile()];
-  //final storage = FirebaseStorage.instance;
 
   @override
   Widget build(BuildContext context) {
