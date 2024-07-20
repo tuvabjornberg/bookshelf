@@ -8,12 +8,14 @@ class BookShelf extends StatefulWidget {
 }
 
 class _BookShelfState extends State<BookShelf> {
-  void getAllBooks() {
+  late final Map<String, dynamic> data;
+
+  void getAllBooks() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
 
     const source = Source.cache;
 
-    db
+    await db
         .collection('users')
         .doc('ArXYsUX9UaW5oORBejfd')
         .collection('books')
@@ -22,6 +24,7 @@ class _BookShelfState extends State<BookShelf> {
       (querySnapshot) {
         print("Successfully completed");
         for (var docSnapshot in querySnapshot.docs) {
+          data[docSnapshot.id] = docSnapshot.data();
           print('${docSnapshot.id} => ${docSnapshot.data()}');
         }
       },
@@ -29,10 +32,22 @@ class _BookShelfState extends State<BookShelf> {
     );
   }
 
+  Future<QuerySnapshot> getBooks() async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    const source = Source.cache;
+
+    return await db
+        .collection('users')
+        .doc('ArXYsUX9UaW5oORBejfd')
+        .collection('books')
+        .get(const GetOptions(source: source));
+  }
+
   @override
   void initState() {
     super.initState();
-    getAllBooks();
+    //getAllBooks();
   }
 
   @override
@@ -42,11 +57,27 @@ class _BookShelfState extends State<BookShelf> {
           backgroundColor: const Color.fromARGB(255, 246, 190, 85),
           title: const Text("Your bookshelf"),
         ),
-        body: const Center(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-              Text('MAIN BOOK SHELF'),
-            ])));
+        body: Column(children: [
+          Expanded(
+            child: FutureBuilder(
+                future: getBooks(),
+                builder: (context, querySnapshot) {
+                  if (querySnapshot.connectionState == ConnectionState.done) {
+                    return ListView.builder(
+                        itemCount: querySnapshot.data?.docs.length ?? 0,
+                        itemBuilder: (BuildContext context, index) {
+                          return ListTile(
+                              title: Text(querySnapshot.data!.docs[index]
+                                  .data()
+                                  .toString()));
+                        });
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                }),
+          ),
+        ]));
   }
 }
