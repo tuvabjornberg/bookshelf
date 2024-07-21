@@ -59,96 +59,100 @@ class _AddBookState extends State<AddBook> {
           title: const Text("Add book"),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: <Widget>[
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    TextFormField(
-                      controller: titleController,
-                      decoration: const InputDecoration(labelText: 'Title'),
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          title = value;
-                        });
-                      },
-                    ),
-                    TextFormField(
-                      controller: authorController,
-                      decoration: const InputDecoration(labelText: 'Author'),
-                      keyboardType: TextInputType.name,
-                      onChanged: (value) {
-                        setState(() {
-                          author = value;
-                        });
-                      },
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: monthController,
-                            decoration:
-                                const InputDecoration(labelText: 'Month'),
-                            keyboardType: TextInputType.number,
-                            onChanged: (value) {
-                              setState(() {
-                                month = int.tryParse(value) ?? month;
-                              });
-                            },
-                          ),
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: <Widget>[
+                        TextFormField(
+                          controller: titleController,
+                          decoration: const InputDecoration(labelText: 'Title'),
+                          keyboardType: TextInputType.name,
+                          onChanged: (value) {
+                            setState(() {
+                              title = value;
+                            });
+                          },
                         ),
-                        const SizedBox(
-                          width: 20,
+                        TextFormField(
+                          controller: authorController,
+                          decoration:
+                              const InputDecoration(labelText: 'Author'),
+                          keyboardType: TextInputType.name,
+                          onChanged: (value) {
+                            setState(() {
+                              author = value;
+                            });
+                          },
                         ),
-                        Expanded(
-                          child: TextFormField(
-                            controller: yearController,
-                            decoration:
-                                const InputDecoration(labelText: 'Year'),
-                            keyboardType: TextInputType.number,
-                            onChanged: (value) {
-                              setState(() {
-                                year = int.tryParse(value) ?? year;
-                              });
-                            },
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: monthController,
+                                decoration:
+                                    const InputDecoration(labelText: 'Month'),
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) {
+                                  setState(() {
+                                    month = int.tryParse(value) ?? month;
+                                  });
+                                },
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Expanded(
+                              child: TextFormField(
+                                controller: yearController,
+                                decoration:
+                                    const InputDecoration(labelText: 'Year'),
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) {
+                                  setState(() {
+                                    year = int.tryParse(value) ?? year;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        //const SizedBox(
+                        //  height: 20,
+                        //),
+                        StarRating(
+                          rating: rating,
+                          allowHalfRating: false,
+                          size: 50,
+                          onRatingChanged: (rating) =>
+                              setState(() => this.rating = rating),
+                        ),
+                        //const SizedBox(
+                        //  height: 20,
+                        //),
+                        FloatingActionButton(
+                          backgroundColor:
+                              const Color.fromARGB(255, 246, 190, 85),
+                          foregroundColor:
+                              const Color.fromARGB(255, 241, 135, 70),
+                          onPressed: () {
+                            _submit();
+                            titleController.clear();
+                            authorController.clear();
+                            monthController.clear();
+                            yearController.clear();
+                          },
+                          child: const Icon(Icons.add),
                         ),
                       ],
                     ),
-                    //const SizedBox(
-                    //  height: 20,
-                    //),
-                    StarRating(
-                      rating: rating,
-                      allowHalfRating: false,
-                      size: 50,
-                      onRatingChanged: (rating) =>
-                          setState(() => this.rating = rating),
-                    ),
-                    //const SizedBox(
-                    //  height: 20,
-                    //),
-                    FloatingActionButton(
-                      backgroundColor: const Color.fromARGB(255, 246, 190, 85),
-                      foregroundColor: const Color.fromARGB(255, 241, 135, 70),
-                      onPressed: () {
-                        _submit();
-                        titleController.clear();
-                        authorController.clear();
-                        monthController.clear();
-                        yearController.clear();
-                      },
-                      child: const Icon(Icons.add),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ));
+            )));
   }
 }
