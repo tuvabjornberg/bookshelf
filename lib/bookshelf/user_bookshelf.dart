@@ -112,14 +112,16 @@ class _BookShelfState extends State<BookShelf> {
                                     child: Container(
                                         height: 94,
                                         width: 24,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 5, horizontal: 0.5),
                                         decoration: const BoxDecoration(
                                           color: Color(0XFFF1B4B4),
                                         ),
-                                        child: Transform(
-                                            alignment: FractionalOffset.center,
-                                            transform:
-                                                Matrix4.rotationZ(pi / 2),
+                                        child: RotatedBox(
+                                            quarterTurns: 1,
                                             child: FittedBox(
+                                              alignment: Alignment.centerLeft,
+                                              fit: BoxFit.contain,
                                               child: Text(bookIds[0]),
                                             ))),
                                   ),
@@ -129,9 +131,18 @@ class _BookShelfState extends State<BookShelf> {
                                 child: Container(
                                   height: 74,
                                   width: 24,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 5, horizontal: 0.5),
                                   decoration: const BoxDecoration(
                                     color: Color(0X9ECE9696),
                                   ),
+                                  child: const RotatedBox(
+                                      quarterTurns: 1,
+                                      child: FittedBox(
+                                        alignment: Alignment.centerLeft,
+                                        fit: BoxFit.contain,
+                                        child: Text('nisifhisuhfsi'),
+                                      )),
                                 ),
                               ),
                               Expanded(
