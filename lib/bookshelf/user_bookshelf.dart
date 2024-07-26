@@ -57,12 +57,15 @@ class _BookShelfState extends State<BookShelf> {
 
   @override
   Widget build(BuildContext context) {
+    Color lightBrownEdgeShelf = const Color(0XFF8A6B4E);
+    Color brownInnerShelf = const Color(0XFF664F3A);
+    Color lightPinkBook = const Color(0XFFF1B4B4);
+    Color darkPinkBook = const Color(0X9ECE9696);
+
+    final double overflowWidth = MediaQuery.of(context).size.width - 76;
+
     return SafeArea(
         child: Scaffold(
-            //appBar: AppBar(
-            //  backgroundColor: const Color.fromARGB(255, 246, 190, 85),
-            //  title: const Text("Your bookshelf"),
-            //),
             body: Container(
       width: double.maxFinite,
       padding: const EdgeInsets.all(24),
@@ -73,8 +76,8 @@ class _BookShelfState extends State<BookShelf> {
             Container(
               width: double.maxFinite,
               padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(
-                color: Color(0XFF8A6B4E),
+              decoration: BoxDecoration(
+                color: lightBrownEdgeShelf,
               ),
               child: Column(
                 children: [
@@ -85,8 +88,8 @@ class _BookShelfState extends State<BookShelf> {
                       horizontal: 4,
                       vertical: 8,
                     ),
-                    decoration: const BoxDecoration(
-                      color: Color(0XFF664F3A),
+                    decoration: BoxDecoration(
+                      color: brownInnerShelf,
                     ),
                     child: Column(
                       children: [
@@ -114,8 +117,8 @@ class _BookShelfState extends State<BookShelf> {
                                         width: 24,
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 5, horizontal: 0.5),
-                                        decoration: const BoxDecoration(
-                                          color: Color(0XFFF1B4B4),
+                                        decoration: BoxDecoration(
+                                          color: lightPinkBook,
                                         ),
                                         child: RotatedBox(
                                             quarterTurns: 1,
@@ -133,8 +136,8 @@ class _BookShelfState extends State<BookShelf> {
                                   width: 24,
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 5, horizontal: 0.5),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0X9ECE9696),
+                                  decoration: BoxDecoration(
+                                    color: darkPinkBook,
                                   ),
                                   child: const RotatedBox(
                                       quarterTurns: 1,
@@ -238,7 +241,14 @@ class _BookShelfState extends State<BookShelf> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 38),
+                        UnconstrainedBox(
+                          child: Container(
+                            color: lightBrownEdgeShelf,
+                            width: overflowWidth,
+                            height: 15,
+                          ),
+                        ),
+                        const SizedBox(height: 25),
                         Container(
                           width: double.maxFinite,
                           margin: const EdgeInsets.only(left: 2),
@@ -263,6 +273,13 @@ class _BookShelfState extends State<BookShelf> {
                                 ),
                               )
                             ],
+                          ),
+                        ),
+                        UnconstrainedBox(
+                          child: Container(
+                            color: lightBrownEdgeShelf,
+                            width: overflowWidth,
+                            height: 15,
                           ),
                         ),
                         const SizedBox(height: 336)
