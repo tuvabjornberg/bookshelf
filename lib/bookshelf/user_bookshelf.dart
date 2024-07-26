@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bookshelf/bookshelf/induvidual_book.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +12,7 @@ class BookShelf extends StatefulWidget {
 
 class _BookShelfState extends State<BookShelf> {
   late final Map<String, dynamic> data;
+  List<String> bookIds = [];
 
   void getAllBooks() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -25,12 +28,13 @@ class _BookShelfState extends State<BookShelf> {
       (querySnapshot) {
         print("Successfully completed");
         for (var docSnapshot in querySnapshot.docs) {
-          data[docSnapshot.id] = docSnapshot.data();
-          print('${docSnapshot.id} => ${docSnapshot.data()}');
+          bookIds.add(docSnapshot.id);
+          //print('${docSnapshot.id} => ');
         }
       },
       onError: (e) => print("Error completing: $e"),
     );
+    setState(() {});
   }
 
   Future<QuerySnapshot> getBooks() async {
@@ -48,7 +52,7 @@ class _BookShelfState extends State<BookShelf> {
   @override
   void initState() {
     super.initState();
-    //getAllBooks();
+    getAllBooks();
   }
 
   @override
@@ -106,12 +110,18 @@ class _BookShelfState extends State<BookShelf> {
                                                   Duration.zero));
                                     },
                                     child: Container(
-                                      height: 94,
-                                      width: 24,
-                                      decoration: const BoxDecoration(
-                                        color: Color(0XFFF1B4B4),
-                                      ),
-                                    ),
+                                        height: 94,
+                                        width: 24,
+                                        decoration: const BoxDecoration(
+                                          color: Color(0XFFF1B4B4),
+                                        ),
+                                        child: Transform(
+                                            alignment: FractionalOffset.center,
+                                            transform:
+                                                Matrix4.rotationZ(pi / 2),
+                                            child: FittedBox(
+                                              child: Text(bookIds[0]),
+                                            ))),
                                   ),
                                 ),
                               ),
