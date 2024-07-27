@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class InduvidualBook extends StatefulWidget {
-  const InduvidualBook({super.key});
+class BookInfoPage extends StatefulWidget {
+  const BookInfoPage({super.key});
   @override
-  _InduvidualBookState createState() => _InduvidualBookState();
+  _BookInfoPageState createState() => _BookInfoPageState();
 }
 
-class _InduvidualBookState extends State<InduvidualBook> {
+class _BookInfoPageState extends State<BookInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
