@@ -4,6 +4,7 @@ import 'package:bookshelf/bookshelf/bookInfoPage.dart';
 import 'package:bookshelf/bookshelf/bookWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BookShelf extends StatefulWidget {
   const BookShelf({super.key});
@@ -12,8 +13,8 @@ class BookShelf extends StatefulWidget {
 }
 
 class _BookShelfState extends State<BookShelf> {
-  late final Map<String, dynamic> data;
   List<String> bookIds = [];
+  int bookIndexDB = 0;
 
   void getAllBooks() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -30,7 +31,6 @@ class _BookShelfState extends State<BookShelf> {
         print("Successfully completed");
         for (var docSnapshot in querySnapshot.docs) {
           bookIds.add(docSnapshot.id);
-          //print('${docSnapshot.id} => ');
         }
       },
       onError: (e) => print("Error completing: $e"),
@@ -38,11 +38,12 @@ class _BookShelfState extends State<BookShelf> {
     setState(() {});
   }
 
-  Future<QuerySnapshot> getBooks() async {
+  Future<QuerySnapshot?> getBooks() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
 
     const source = Source.cache;
 
+    print("Fetching from db...");
     return await db
         .collection('users')
         .doc('ArXYsUX9UaW5oORBejfd')
@@ -54,17 +55,28 @@ class _BookShelfState extends State<BookShelf> {
   void initState() {
     super.initState();
 
-    if (bookIds.isEmpty) {
+    _loadPreferences();
+  }
+
+  void _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    bookIds = prefs.getStringList('bookTitles') ?? [];
+    bookIndexDB = prefs.getInt('nBookTitles') ?? 0;
+
+    if (bookIds.length != bookIndexDB) {
       getAllBooks();
+      prefs.setStringList("bookTitles", bookIds);
+      prefs.setInt('nBookTitles', bookIds.length);
     }
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     Color lightBrownEdgeShelf = const Color(0XFF8A6B4E);
     Color brownInnerShelf = const Color(0XFF664F3A);
-    Color lightPinkBook = const Color(0XFFF1B4B4);
-    Color darkPinkBook = const Color(0X9ECE9696);
 
     final double overflowWidth = MediaQuery.of(context).size.width - 76;
 
@@ -100,6 +112,7 @@ class _BookShelfState extends State<BookShelf> {
                     ),
                     child: Column(
                       children: [
+                        /*
                         Container(
                           width: double.maxFinite,
                           margin: const EdgeInsets.only(left: 2),
@@ -292,6 +305,7 @@ class _BookShelfState extends State<BookShelf> {
                           ),
                         ),
                         const SizedBox(height: 8),
+                        */
                         SizedBox(
                           height: 96,
                           width: double.infinity,
@@ -323,8 +337,8 @@ class _BookShelfState extends State<BookShelf> {
                                             child: FittedBox(
                                               alignment: Alignment.centerLeft,
                                               fit: BoxFit.contain,
-                                              child: Text(bookIds[
-                                                  index]), //TODO: + 11, depends on nShelfs
+                                              child: Text(bookIds[index]),
+                                              //Text(snapshot.data!.docs[index].id.toString()), // Text(bookTitles.data![index]), //TODO: + 11, depends on nShelfs
                                             )))
                                   ]));
                             },

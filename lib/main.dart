@@ -8,10 +8,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  runApp(const MainApp());
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  runApp(const MainApp());
 }
 
 class MainApp extends StatefulWidget {
@@ -31,65 +32,64 @@ class _MyAppPageState extends State<MainApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(fontFamily: 'InterRegular'),
       home: Scaffold(
-        body: screens[index],
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          onTap: (newIndex) {
-            setState(() {
-              index = newIndex;
-            });
-          },
-          currentIndex: index,
-          backgroundColor: const Color.fromARGB(255, 246, 190, 85),
-          selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
-          items: [
-            BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  'assets/icons/library.svg',
-                  width: 40,
-                  height: 40,
-                  colorFilter: const ColorFilter.mode(
-                      Color.fromARGB(255, 241, 135, 70), BlendMode.srcIn),
-                ),
-                activeIcon: SvgPicture.asset(
-                  'assets/icons/library.svg',
-                  width: 40,
-                  height: 40,
-                  colorFilter:
-                      const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                ),
-                label: 'Bookshelf'),
-            BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  'assets/icons/add.svg',
-                  width: 40,
-                  height: 40,
-                  colorFilter: const ColorFilter.mode(
-                      Color.fromARGB(255, 241, 135, 70), BlendMode.srcIn),
-                ),
-                activeIcon: SvgPicture.asset('assets/icons/add.svg',
+          body: screens[index],
+          bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            onTap: (newIndex) {
+              setState(() {
+                index = newIndex;
+              });
+            },
+            currentIndex: index,
+            backgroundColor: const Color.fromARGB(255, 246, 190, 85),
+            selectedItemColor: const Color.fromARGB(255, 255, 255, 255),
+            items: [
+              BottomNavigationBarItem(
+                  icon: SvgPicture.asset(
+                    'assets/icons/library.svg',
+                    width: 40,
+                    height: 40,
+                    colorFilter: const ColorFilter.mode(
+                        Color.fromARGB(255, 241, 135, 70), BlendMode.srcIn),
+                  ),
+                  activeIcon: SvgPicture.asset(
+                    'assets/icons/library.svg',
                     width: 40,
                     height: 40,
                     colorFilter:
-                        const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
-                label: 'Add book'),
-            BottomNavigationBarItem(
-                icon: SvgPicture.asset(
-                  'assets/icons/profile.svg',
-                  width: 40,
-                  height: 40,
-                  colorFilter: const ColorFilter.mode(
-                      Color.fromARGB(255, 241, 135, 70), BlendMode.srcIn),
-                ),
-                activeIcon: SvgPicture.asset('assets/icons/profile.svg',
+                        const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                  ),
+                  label: 'Bookshelf'),
+              BottomNavigationBarItem(
+                  icon: SvgPicture.asset(
+                    'assets/icons/add.svg',
                     width: 40,
                     height: 40,
-                    colorFilter:
-                        const ColorFilter.mode(Colors.white, BlendMode.srcIn)),
-                label: 'Profile')
-          ],
-        ),
-      ),
+                    colorFilter: const ColorFilter.mode(
+                        Color.fromARGB(255, 241, 135, 70), BlendMode.srcIn),
+                  ),
+                  activeIcon: SvgPicture.asset('assets/icons/add.svg',
+                      width: 40,
+                      height: 40,
+                      colorFilter: const ColorFilter.mode(
+                          Colors.white, BlendMode.srcIn)),
+                  label: 'Add book'),
+              BottomNavigationBarItem(
+                  icon: SvgPicture.asset(
+                    'assets/icons/profile.svg',
+                    width: 40,
+                    height: 40,
+                    colorFilter: const ColorFilter.mode(
+                        Color.fromARGB(255, 241, 135, 70), BlendMode.srcIn),
+                  ),
+                  activeIcon: SvgPicture.asset('assets/icons/profile.svg',
+                      width: 40,
+                      height: 40,
+                      colorFilter: const ColorFilter.mode(
+                          Colors.white, BlendMode.srcIn)),
+                  label: 'Profile')
+            ],
+          )),
     );
   }
 }
