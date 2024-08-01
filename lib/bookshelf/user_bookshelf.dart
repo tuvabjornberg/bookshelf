@@ -132,7 +132,7 @@ class _BookShelfState extends State<BookShelf> {
                                                 PageRouteBuilder(
                                                     pageBuilder: (context, x,
                                                             xx) =>
-                                                        const BookInfoPage(),
+                                                        BookInfoPage(bookTitle: bookIds[index]),
                                                     transitionDuration:
                                                         Duration.zero,
                                                     reverseTransitionDuration:
