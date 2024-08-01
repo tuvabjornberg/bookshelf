@@ -112,7 +112,82 @@ class _BookShelfState extends State<BookShelf> {
                     ),
                     child: Column(
                       children: [
-                        /*
+                        SizedBox(
+                          height: 96,
+                          width: double.infinity,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            itemCount: maxBookIndex <= 11
+                                ? maxBookIndex
+                                : 11, //TODO: depends on nShelfs
+                            itemBuilder: (context, index) {
+                              return Align(
+                                  alignment: Alignment.bottomLeft,
+                                  child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context,
+                                                rootNavigator: true)
+                                            .push(
+                                                PageRouteBuilder(
+                                                    pageBuilder: (context, x,
+                                                            xx) =>
+                                                        const BookInfoPage(),
+                                                    transitionDuration:
+                                                        Duration.zero,
+                                                    reverseTransitionDuration:
+                                                        Duration.zero));
+                                      },
+                                      child: Row(children: [
+                                        Container(
+                                            height: Random().nextInt(37) + 64,
+                                            width: 26.3,
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 5, horizontal: 0.5),
+                                            decoration: BoxDecoration(
+                                              color: Color.fromARGB(
+                                                255,
+                                                Random().nextInt(70) + 150,
+                                                Random().nextInt(100) + 100,
+                                                Random().nextInt(130) + 50,
+                                              ),
+                                            ),
+                                            child: RotatedBox(
+                                                quarterTurns: 1,
+                                                child: FittedBox(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  fit: BoxFit.contain,
+                                                  child: Text(bookIds[index]),
+                                                  //Text(snapshot.data!.docs[index].id.toString()), // Text(bookTitles.data![index]), //TODO: + 11, depends on nShelfs
+                                                )))
+                                      ])));
+                            },
+                          ),
+                        ),
+                        Container(
+                          color: lightBrownEdgeShelf,
+                          width: double.maxFinite,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 0,
+                            vertical: 8,
+                          ),
+                        ),
+                        const SizedBox(height: 336)
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            const SizedBox(height: 6)
+          ],
+        ),
+      ),
+    )));
+  }
+
+  /*
                         Container(
                           width: double.maxFinite,
                           margin: const EdgeInsets.only(left: 2),
@@ -168,132 +243,7 @@ class _BookShelfState extends State<BookShelf> {
                                       )),
                                 ),
                               ),
-                              Expanded(
-                                child: Container(
-                                  height: 86,
-                                  width: 24,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 0.5),
-                                  decoration: BoxDecoration(
-                                    color: lightPinkBook,
-                                  ),
-                                  child: RotatedBox(
-                                      quarterTurns: 1,
-                                      child: FittedBox(
-                                        alignment: Alignment.centerLeft,
-                                        fit: BoxFit.contain,
-                                        child: Text(bookIds[++bookIdIndex]),
-                                      )),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  height: 58,
-                                  width: 24,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 0.5),
-                                  decoration: BoxDecoration(
-                                    color: darkPinkBook,
-                                  ),
-                                  child: RotatedBox(
-                                      quarterTurns: 1,
-                                      child: FittedBox(
-                                        alignment: Alignment.centerLeft,
-                                        fit: BoxFit.contain,
-                                        child: Text(bookIds[++bookIdIndex]),
-                                      )),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  height: 74,
-                                  width: 24,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 0.5),
-                                  decoration: BoxDecoration(
-                                    color: lightPinkBook,
-                                  ),
-                                  child: RotatedBox(
-                                      quarterTurns: 1,
-                                      child: FittedBox(
-                                        alignment: Alignment.centerLeft,
-                                        fit: BoxFit.contain,
-                                        child: Text(bookIds[++bookIdIndex]),
-                                      )),
-                                ),
-                              ),
-                              Visibility(
-                                visible: bookIdIndex <= maxBookIndex,
-                                child: Expanded(
-                                  child: Container(
-                                    height: 94,
-                                    width: 24,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 5, horizontal: 0.5),
-                                    decoration: BoxDecoration(
-                                      color: darkPinkBook,
-                                    ),
-                                    child: RotatedBox(
-                                        quarterTurns: 1,
-                                        child: FittedBox(
-                                          alignment: Alignment.centerLeft,
-                                          fit: BoxFit.contain,
-                                          child: Text(bookIds[++bookIdIndex]),
-                                        )),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  height: 86,
-                                  width: 24,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0XFFF1B4B4),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  height: 58,
-                                  width: 24,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0X9ECE9696),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: Container(
-                                    height: 94,
-                                    width: 24,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0XFFF1B4B4),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  height: 80,
-                                  width: 24,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0X9ECE9696),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: Container(
-                                    height: 94,
-                                    width: 24,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0XFFF1B4B4),
-                                    ),
-                                  ),
-                                ),
-                              )
+                      
                             ],
                           ),
                         ),
@@ -306,65 +256,6 @@ class _BookShelfState extends State<BookShelf> {
                         ),
                         const SizedBox(height: 8),
                         */
-                        SizedBox(
-                          height: 96,
-                          width: double.infinity,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            itemCount: maxBookIndex <= 11
-                                ? maxBookIndex
-                                : 11, //TODO: depends on nShelfs
-                            itemBuilder: (context, index) {
-                              return Align(
-                                  alignment: Alignment.bottomLeft,
-                                  child: Row(children: [
-                                    Container(
-                                        height: Random().nextInt(37) + 64,
-                                        width: 26.3,
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 5, horizontal: 0.5),
-                                        decoration: BoxDecoration(
-                                          color: Color.fromARGB(
-                                            255,
-                                            Random().nextInt(70) + 150,
-                                            Random().nextInt(100) + 100,
-                                            Random().nextInt(130) + 50,
-                                          ),
-                                        ),
-                                        child: RotatedBox(
-                                            quarterTurns: 1,
-                                            child: FittedBox(
-                                              alignment: Alignment.centerLeft,
-                                              fit: BoxFit.contain,
-                                              child: Text(bookIds[index]),
-                                              //Text(snapshot.data!.docs[index].id.toString()), // Text(bookTitles.data![index]), //TODO: + 11, depends on nShelfs
-                                            )))
-                                  ]));
-                            },
-                          ),
-                        ),
-                        Container(
-                          color: lightBrownEdgeShelf,
-                          width: double.maxFinite,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 0,
-                            vertical: 8,
-                          ),
-                        ),
-                        const SizedBox(height: 336)
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(height: 6)
-          ],
-        ),
-      ),
-    )));
-  }
 
 /*
   @override
