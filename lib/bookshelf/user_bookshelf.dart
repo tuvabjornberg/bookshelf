@@ -78,10 +78,23 @@ class _BookShelfState extends State<BookShelf> {
     Color lightBrownEdgeShelf = const Color(0XFF8A6B4E);
     Color brownInnerShelf = const Color(0XFF664F3A);
 
+    List<Color> bookshelfColors = [];
+
     final double overflowWidth = MediaQuery.of(context).size.width - 76;
 
     int bookIdIndex = 0;
     int maxBookIndex = bookIds.length;
+
+    Color randomColorGenerator() {
+      Color randomColor = Color.fromARGB(
+        255,
+        Random().nextInt(70) + 150,
+        Random().nextInt(100) + 100,
+        Random().nextInt(130) + 50,
+      );
+      bookshelfColors.add(randomColor);
+      return randomColor;
+    }
 
     return SafeArea(
         child: Scaffold(
@@ -126,17 +139,21 @@ class _BookShelfState extends State<BookShelf> {
                                   alignment: Alignment.bottomLeft,
                                   child: GestureDetector(
                                       onTap: () {
-                                        Navigator.of(context,
-                                                rootNavigator: true)
-                                            .push(
-                                                PageRouteBuilder(
-                                                    pageBuilder: (context, x,
-                                                            xx) =>
-                                                        BookInfoPage(bookTitle: bookIds[index]),
-                                                    transitionDuration:
-                                                        Duration.zero,
-                                                    reverseTransitionDuration:
-                                                        Duration.zero));
+                                        Navigator
+                                                .of(context,
+                                                    rootNavigator: true)
+                                            .push(PageRouteBuilder(
+                                                pageBuilder: (context, x,
+                                                        xx) =>
+                                                    BookInfoPage(
+                                                        bookTitle:
+                                                            bookIds[index],
+                                                        bookColor:
+                                                            bookshelfColors[index]), //bookColor: bookIds[index].,),
+                                                transitionDuration:
+                                                    Duration.zero,
+                                                reverseTransitionDuration:
+                                                    Duration.zero));
                                       },
                                       child: Row(children: [
                                         Container(
@@ -145,12 +162,7 @@ class _BookShelfState extends State<BookShelf> {
                                             padding: const EdgeInsets.symmetric(
                                                 vertical: 5, horizontal: 0.5),
                                             decoration: BoxDecoration(
-                                              color: Color.fromARGB(
-                                                255,
-                                                Random().nextInt(70) + 150,
-                                                Random().nextInt(100) + 100,
-                                                Random().nextInt(130) + 50,
-                                              ),
+                                              color: randomColorGenerator(),
                                             ),
                                             child: RotatedBox(
                                                 quarterTurns: 1,

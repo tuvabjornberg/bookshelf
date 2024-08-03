@@ -18,6 +18,7 @@ dependencies:
   firebase_core: ^2.24.2
   cloud_firestore: ^4.14.0
   shared_preferences: ^2.2.3
+  flutter_colorpicker: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -32,3 +33,9 @@ flutter:
   - assets/icons/add.svg
   - assets/icons/library.svg
   - assets/icons/profile.svg
+
+  fonts:
+  - family: StratfordRegular
+    fonts:
+      - asset: assets/fonts/StratfordRegular.ttf
+        weight: 400

@@ -30,7 +30,7 @@ class _MyAppPageState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(fontFamily: 'InterRegular'),
+      theme: ThemeData(fontFamily: 'StratfordRegular'),
       home: Scaffold(
           body: screens[index],
           bottomNavigationBar: BottomNavigationBar(
