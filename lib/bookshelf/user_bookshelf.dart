@@ -1,15 +1,15 @@
 import 'dart:math';
 
-import 'package:bookshelf/bookshelf/bookInfoPage.dart';
-import 'package:bookshelf/bookshelf/bookWidget.dart';
+import 'package:bookshelf/bookshelf/book_info_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BookShelf extends StatefulWidget {
   const BookShelf({super.key});
+
   @override
-  _BookShelfState createState() => _BookShelfState();
+  State<BookShelf> createState() => _BookShelfState();
 }
 
 class _BookShelfState extends State<BookShelf> {
@@ -33,7 +33,7 @@ class _BookShelfState extends State<BookShelf> {
         .doc('ArXYsUX9UaW5oORBejfd')
         .collection('books')
         .doc('basicBookshelfInfo')
-        .get() //const GetOptions(source: source)) TODO:??? Crashes if source???
+        .get(const GetOptions(source: source))
         .then(
       (documentSnapshot) {
         print("Successfully completed");
@@ -44,39 +44,9 @@ class _BookShelfState extends State<BookShelf> {
       },
       onError: (e) => print("Error completing: $e"),
     );
-/*
-    await db
-        .collection('users')
-        .doc('ArXYsUX9UaW5oORBejfd')
-        .collection('books')
-        .get(const GetOptions(source: source))
-        .then(
-      (querySnapshot) {
-        print("Successfully completed");
-        for (var docSnapshot in querySnapshot.docs) {
-          bookIds.add(docSnapshot.id);
-          print(docSnapshot.data());
-          //bookshelfColors.add(docSnapshot.data().entries)
-        }
-      },
-      onError: (e) => print("Error completing: $e"),
-    );
-    */
+
     setState(() {});
   }
-
-  //Future<QuerySnapshot?> getBooks() async {
-  //  FirebaseFirestore db = FirebaseFirestore.instance;
-//
-  //  const source = Source.cache;
-//
-  //  print("Fetching from db...");
-  //  return await db
-  //      .collection('users')
-  //      .doc('ArXYsUX9UaW5oORBejfd')
-  //      .collection('books')
-  //      .get(const GetOptions(source: source));
-  //}
 
   @override
   void initState() {
@@ -150,9 +120,9 @@ class _BookShelfState extends State<BookShelf> {
                                   alignment: Alignment.bottomLeft,
                                   child: GestureDetector(
                                       onTap: () async {
-                                        final returnedColor = await Navigator.of(
-                                                context,
-                                                rootNavigator: true)
+                                        final returnedColor = await Navigator
+                                                .of(context,
+                                                    rootNavigator: true)
                                             .push(PageRouteBuilder(
                                                 pageBuilder: (context, x, xx) =>
                                                     BookInfoPage(
@@ -166,7 +136,8 @@ class _BookShelfState extends State<BookShelf> {
                                                 reverseTransitionDuration:
                                                     Duration.zero));
                                         setState(() {
-                                          bookshelfColors[index] = returnedColor;
+                                          bookshelfColors[index] =
+                                              returnedColor;
                                         });
                                       },
                                       child: Row(children: [
@@ -185,7 +156,6 @@ class _BookShelfState extends State<BookShelf> {
                                                       Alignment.centerLeft,
                                                   fit: BoxFit.contain,
                                                   child: Text(bookIds[index]),
-                                                  //Text(snapshot.data!.docs[index].id.toString()), // Text(bookTitles.data![index]), //TODO: + 11, depends on nShelfs
                                                 )))
                                       ])));
                             },

@@ -4,19 +4,22 @@ import 'package:flutter_rating/flutter_rating.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class BookInfoPage extends StatefulWidget {
-  late String bookTitle;
-  late Color bookColor;
+  final String bookTitle;
+  final Color bookColor;
 
-  BookInfoPage({super.key, required this.bookTitle, required this.bookColor});
+  const BookInfoPage(
+      {super.key, required this.bookTitle, required this.bookColor});
+
   @override
-  _BookInfoPageState createState() => _BookInfoPageState();
+  State<BookInfoPage> createState() => _BookInfoPageState();
 }
 
 class _BookInfoPageState extends State<BookInfoPage> {
   Map<String, dynamic> bookInfo = {};
-  bool colorChangeFlag = false;
   late DocumentSnapshot<Map<String, dynamic>> cachedBookInfo;
-  Color pickerColor = Color.fromARGB(255, 0, 0, 255);
+
+  bool colorChangeFlag = false;
+  late Color pickerColor = widget.bookColor;
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getBookInfo() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -66,7 +69,10 @@ class _BookInfoPageState extends State<BookInfoPage> {
 
   @override
   void dispose() {
-    updateDBColor();
+    if (colorChangeFlag) {
+      updateDBColor();
+    }
+
     print("Back To old Screen");
     super.dispose();
   }
@@ -91,7 +97,7 @@ class _BookInfoPageState extends State<BookInfoPage> {
             ElevatedButton(
               child: const Text('Got it'),
               onPressed: () {
-                setState(() => widget.bookColor = pickerColor);
+                setState(() {});
                 Navigator.of(context).pop();
               },
             ),
@@ -101,7 +107,7 @@ class _BookInfoPageState extends State<BookInfoPage> {
       );
     }
 
-    Future<DocumentSnapshot<Map<String, dynamic>>> empty() async {
+    Future<DocumentSnapshot<Map<String, dynamic>>> fetchCachedBooks() async {
       return cachedBookInfo;
     }
 
@@ -114,7 +120,7 @@ class _BookInfoPageState extends State<BookInfoPage> {
         ),
         body: SingleChildScrollView(
             child: FutureBuilder(
-                future: colorChangeFlag ? empty() : getBookInfo(),
+                future: colorChangeFlag ? fetchCachedBooks() : getBookInfo(),
                 builder: (context, docSnapshot) {
                   if (docSnapshot.connectionState == ConnectionState.done) {
                     bookInfo.addEntries(docSnapshot.data!.data()!.entries);
@@ -124,8 +130,8 @@ class _BookInfoPageState extends State<BookInfoPage> {
                         Container(
                           margin: const EdgeInsets.all(30),
                           decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: widget.bookColor, width: 20)),
+                              border:
+                                  Border.all(color: pickerColor, width: 20)),
                           child: Column(children: [
                             Container(
                               alignment: Alignment.topCenter,
