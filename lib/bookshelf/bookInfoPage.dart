@@ -14,6 +14,9 @@ class BookInfoPage extends StatefulWidget {
 
 class _BookInfoPageState extends State<BookInfoPage> {
   Map<String, dynamic> bookInfo = {};
+  bool colorChangeFlag = false;
+  late DocumentSnapshot<Map<String, dynamic>> cachedBookInfo;
+  Color pickerColor = Color.fromARGB(255, 0, 0, 255);
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getBookInfo() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -21,20 +24,58 @@ class _BookInfoPageState extends State<BookInfoPage> {
     const source = Source.cache;
 
     print("Fetching from db...");
-    return await db
+    cachedBookInfo = await db
         .collection('users')
         .doc('ArXYsUX9UaW5oORBejfd')
         .collection('books')
         .doc(widget.bookTitle)
         .get(const GetOptions(source: source));
+
+    return cachedBookInfo;
+  }
+
+  void updateDBColor() {
+    DocumentReference updateBook = FirebaseFirestore.instance
+        .collection('users')
+        .doc('ArXYsUX9UaW5oORBejfd')
+        .collection('books')
+        .doc(widget.bookTitle);
+
+    updateBook
+        .update({'color': pickerColor.value})
+        .then((value) => print("Book color updated"))
+        .catchError((error) => print("Failed to update book color: $error"));
+
+    DocumentReference updateBasicColor = FirebaseFirestore.instance
+        .collection('users')
+        .doc('ArXYsUX9UaW5oORBejfd')
+        .collection('books')
+        .doc('basicBookshelfInfo');
+
+    updateBasicColor
+        .update({widget.bookTitle: pickerColor.value})
+        .then((value) => print("basicBookshelfInfo color updated"))
+        .catchError((error) =>
+            print("Failed to update color in basicBookshelfInfo: $error"));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    updateDBColor();
+    print("Back To old Screen");
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    Color pickerColor = Color(0xff443a49);
-
     void changeColor(Color color) {
       pickerColor = color;
+      colorChangeFlag = true;
     }
 
     Future showPicker() {
@@ -60,13 +101,20 @@ class _BookInfoPageState extends State<BookInfoPage> {
       );
     }
 
+    Future<DocumentSnapshot<Map<String, dynamic>>> empty() async {
+      return cachedBookInfo;
+    }
+
     return Scaffold(
         appBar: AppBar(
+          leading: BackButton(
+            onPressed: () => Navigator.of(context).pop(pickerColor),
+          ),
           backgroundColor: const Color.fromARGB(255, 246, 190, 85),
         ),
         body: SingleChildScrollView(
             child: FutureBuilder(
-                future: getBookInfo(),
+                future: colorChangeFlag ? empty() : getBookInfo(),
                 builder: (context, docSnapshot) {
                   if (docSnapshot.connectionState == ConnectionState.done) {
                     bookInfo.addEntries(docSnapshot.data!.data()!.entries);
@@ -77,8 +125,7 @@ class _BookInfoPageState extends State<BookInfoPage> {
                           margin: const EdgeInsets.all(30),
                           decoration: BoxDecoration(
                               border: Border.all(
-                                  color: bookInfo['color'] ?? widget.bookColor,
-                                  width: 20)),
+                                  color: widget.bookColor, width: 20)),
                           child: Column(children: [
                             Container(
                               alignment: Alignment.topCenter,

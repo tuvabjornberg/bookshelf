@@ -17,7 +17,14 @@ dependencies:
   flutter_rating: ^2.0.2
   firebase_core: ^2.24.2
   cloud_firestore: ^4.14.0
-  shared_preferences: ^2.2.3
+  shared_preferences: ^2.2.3 #TODO: Now:  shared_preferences 2.2.3 (2.3.1 available)
+                                          #shared_preferences_android 2.2.4 (2.3.1 available)
+                                          #shared_preferences_foundation 2.4.0 (2.5.2 available)
+                                          #shared_preferences_linux 2.3.2 (2.4.1 available)
+                                          #shared_preferences_platform_interface 2.4.0 (2.4.1 available)
+                                          #shared_preferences_web 2.3.0 (2.4.2 available)
+                                          #shared_preferences_windows 2.3.2 (2.4.1 available)
+                              # Should only need for android + ios
   flutter_colorpicker: ^1.1.0
 
 dev_dependencies:

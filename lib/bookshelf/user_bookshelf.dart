@@ -14,7 +14,14 @@ class BookShelf extends StatefulWidget {
 
 class _BookShelfState extends State<BookShelf> {
   List<String> bookIds = [];
+  List<Color> bookshelfColors = [];
+
   int bookIndexDB = 0;
+
+  void addIdsColors(String id, int color) {
+    bookIds.add(id);
+    bookshelfColors.add(Color(color));
+  }
 
   void getAllBooks() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -25,31 +32,51 @@ class _BookShelfState extends State<BookShelf> {
         .collection('users')
         .doc('ArXYsUX9UaW5oORBejfd')
         .collection('books')
+        .doc('basicBookshelfInfo')
+        .get() //const GetOptions(source: source)) TODO:??? Crashes if source???
+        .then(
+      (documentSnapshot) {
+        print("Successfully completed");
+        print(documentSnapshot.id);
+        print(documentSnapshot.data());
+
+        documentSnapshot.data()?.forEach((k, v) => addIdsColors(k, v));
+      },
+      onError: (e) => print("Error completing: $e"),
+    );
+/*
+    await db
+        .collection('users')
+        .doc('ArXYsUX9UaW5oORBejfd')
+        .collection('books')
         .get(const GetOptions(source: source))
         .then(
       (querySnapshot) {
         print("Successfully completed");
         for (var docSnapshot in querySnapshot.docs) {
           bookIds.add(docSnapshot.id);
+          print(docSnapshot.data());
+          //bookshelfColors.add(docSnapshot.data().entries)
         }
       },
       onError: (e) => print("Error completing: $e"),
     );
+    */
     setState(() {});
   }
 
-  Future<QuerySnapshot?> getBooks() async {
-    FirebaseFirestore db = FirebaseFirestore.instance;
-
-    const source = Source.cache;
-
-    print("Fetching from db...");
-    return await db
-        .collection('users')
-        .doc('ArXYsUX9UaW5oORBejfd')
-        .collection('books')
-        .get(const GetOptions(source: source));
-  }
+  //Future<QuerySnapshot?> getBooks() async {
+  //  FirebaseFirestore db = FirebaseFirestore.instance;
+//
+  //  const source = Source.cache;
+//
+  //  print("Fetching from db...");
+  //  return await db
+  //      .collection('users')
+  //      .doc('ArXYsUX9UaW5oORBejfd')
+  //      .collection('books')
+  //      .get(const GetOptions(source: source));
+  //}
 
   @override
   void initState() {
@@ -59,16 +86,16 @@ class _BookShelfState extends State<BookShelf> {
   }
 
   void _loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    bookIds = prefs.getStringList('bookTitles') ?? [];
-    bookIndexDB = prefs.getInt('nBookTitles') ?? 0;
-
-    if (bookIds.length != bookIndexDB) {
-      getAllBooks();
-      prefs.setStringList("bookTitles", bookIds);
-      prefs.setInt('nBookTitles', bookIds.length);
-    }
+//    final prefs = await SharedPreferences.getInstance();
+//
+//    bookIds = prefs.getStringList('bookTitles') ?? [];
+//    bookIndexDB = prefs.getInt('nBookTitles') ?? 0;
+//
+//    if (bookIds.length != bookIndexDB || true) {
+    getAllBooks();
+//      prefs.setStringList("bookTitles", bookIds);
+//      prefs.setInt('nBookTitles', bookIds.length);
+//    }
 
     setState(() {});
   }
@@ -78,23 +105,7 @@ class _BookShelfState extends State<BookShelf> {
     Color lightBrownEdgeShelf = const Color(0XFF8A6B4E);
     Color brownInnerShelf = const Color(0XFF664F3A);
 
-    List<Color> bookshelfColors = [];
-
-    final double overflowWidth = MediaQuery.of(context).size.width - 76;
-
-    int bookIdIndex = 0;
     int maxBookIndex = bookIds.length;
-
-    Color randomColorGenerator() {
-      Color randomColor = Color.fromARGB(
-        255,
-        Random().nextInt(70) + 150,
-        Random().nextInt(100) + 100,
-        Random().nextInt(130) + 50,
-      );
-      bookshelfColors.add(randomColor);
-      return randomColor;
-    }
 
     return SafeArea(
         child: Scaffold(
@@ -138,22 +149,25 @@ class _BookShelfState extends State<BookShelf> {
                               return Align(
                                   alignment: Alignment.bottomLeft,
                                   child: GestureDetector(
-                                      onTap: () {
-                                        Navigator
-                                                .of(context,
-                                                    rootNavigator: true)
+                                      onTap: () async {
+                                        final returnedColor = await Navigator.of(
+                                                context,
+                                                rootNavigator: true)
                                             .push(PageRouteBuilder(
-                                                pageBuilder: (context, x,
-                                                        xx) =>
+                                                pageBuilder: (context, x, xx) =>
                                                     BookInfoPage(
                                                         bookTitle:
                                                             bookIds[index],
                                                         bookColor:
-                                                            bookshelfColors[index]), //bookColor: bookIds[index].,),
+                                                            (bookshelfColors[
+                                                                index])),
                                                 transitionDuration:
                                                     Duration.zero,
                                                 reverseTransitionDuration:
                                                     Duration.zero));
+                                        setState(() {
+                                          bookshelfColors[index] = returnedColor;
+                                        });
                                       },
                                       child: Row(children: [
                                         Container(
@@ -162,7 +176,7 @@ class _BookShelfState extends State<BookShelf> {
                                             padding: const EdgeInsets.symmetric(
                                                 vertical: 5, horizontal: 0.5),
                                             decoration: BoxDecoration(
-                                              color: randomColorGenerator(),
+                                              color: bookshelfColors[index],
                                             ),
                                             child: RotatedBox(
                                                 quarterTurns: 1,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
 
 class AddBook extends StatefulWidget {
   const AddBook({super.key});
@@ -32,6 +33,13 @@ class _AddBookState extends State<AddBook> {
 
   void _submit() {
     if (title.isNotEmpty) {
+      int randomGeneratedColor = Color.fromARGB(
+        255,
+        Random().nextInt(70) + 150,
+        Random().nextInt(100) + 100,
+        Random().nextInt(130) + 50,
+      ).value;
+
       DocumentReference newBook = FirebaseFirestore.instance
           .collection('users')
           .doc('ArXYsUX9UaW5oORBejfd')
@@ -43,10 +51,24 @@ class _AddBookState extends State<AddBook> {
             'title': title,
             'author': author,
             'date': '$month/$year',
-            'rating': rating
+            'rating': rating,
+            'color': randomGeneratedColor
           })
           .then((value) => print("Book Added"))
           .catchError((error) => print("Failed to add book: $error"));
+
+      DocumentReference newTitleColorReference = FirebaseFirestore.instance
+          .collection('users')
+          .doc('ArXYsUX9UaW5oORBejfd')
+          .collection('books')
+          .doc('basicBookshelfInfo');
+
+      newTitleColorReference
+          .update({title: randomGeneratedColor})
+          .then((value) => print("basicBookshelfInfo item Added"))
+          .catchError(
+              (error) => print("Failed to add to basicBookshelfInfo: $error"));
+
       resetEntries();
     }
   }
