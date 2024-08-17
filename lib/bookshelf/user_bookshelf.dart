@@ -36,7 +36,7 @@ class _BookShelfState extends State<BookShelf> {
         .get(const GetOptions(source: source))
         .then(
       (documentSnapshot) {
-        print("Successfully completed");
+        print("Successfully completed fetch basicBookshelfInfo");
         print(documentSnapshot.id);
         print(documentSnapshot.data());
 
@@ -76,213 +76,123 @@ class _BookShelfState extends State<BookShelf> {
     Color brownInnerShelf = const Color(0XFF664F3A);
 
     int maxBookIndex = bookIds.length;
+    int nShelves = (maxBookIndex / 11).ceil();
+    double bookWidth = (MediaQuery.sizeOf(context).width - 56.5) / 11;
 
     return SafeArea(
         child: Scaffold(
             body: Container(
       width: double.maxFinite,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(15),
       child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: double.maxFinite,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: lightBrownEdgeShelf,
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 6),
-                  Container(
-                    width: double.maxFinite,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 1,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: brownInnerShelf,
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 96,
-                          width: double.infinity,
-                          child: ListView.builder(
+                width: double.maxFinite,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: lightBrownEdgeShelf,
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                        width: double.maxFinite,
+                        decoration: BoxDecoration(
+                          color: brownInnerShelf,
+                        ),
+                        child: ListView.builder(
                             shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            itemCount: maxBookIndex <= 11
-                                ? maxBookIndex
-                                : 11, //TODO: depends on nShelfs
-                            itemBuilder: (context, index) {
-                              return Align(
-                                  alignment: Alignment.bottomLeft,
-                                  child: GestureDetector(
-                                      onTap: () async {
-                                        final returnedColor = await Navigator
-                                                .of(context,
-                                                    rootNavigator: true)
-                                            .push(PageRouteBuilder(
-                                                pageBuilder: (context, x, xx) =>
-                                                    BookInfoPage(
-                                                        bookTitle:
-                                                            bookIds[index],
-                                                        bookColor:
-                                                            (bookshelfColors[
-                                                                index])),
-                                                transitionDuration:
-                                                    Duration.zero,
-                                                reverseTransitionDuration:
-                                                    Duration.zero));
-                                        setState(() {
-                                          bookshelfColors[index] =
-                                              returnedColor;
-                                        });
+                            scrollDirection: Axis.vertical,
+                            itemCount: nShelves,
+                            itemBuilder: (context, shelfIndex) {
+                              return Column(
+                                children: [
+                                  const SizedBox(height: 6),
+                                  SizedBox(
+                                    height: 96,
+                                    width: double.infinity,
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: maxBookIndex <= 11
+                                          ? maxBookIndex
+                                          : shelfIndex < nShelves - 1
+                                              ? 11
+                                              : maxBookIndex - 11 * shelfIndex,
+                                      itemBuilder: (context, index) {
+                                        return Align(
+                                            alignment: Alignment.bottomLeft,
+                                            child: GestureDetector(
+                                                onTap: () async {
+                                                  final returnedColor = await Navigator.of(
+                                                          context,
+                                                          rootNavigator: true)
+                                                      .push(PageRouteBuilder(
+                                                          pageBuilder: (context, x, xx) => BookInfoPage(
+                                                              bookTitle: bookIds[
+                                                                  shelfIndex * 11 +
+                                                                      index],
+                                                              bookColor: (bookshelfColors[
+                                                                  shelfIndex * 11 +
+                                                                      index])),
+                                                          transitionDuration:
+                                                              Duration.zero,
+                                                          reverseTransitionDuration:
+                                                              Duration.zero));
+                                                  setState(() {
+                                                    bookshelfColors[shelfIndex *
+                                                            11 +
+                                                        index] = returnedColor;
+                                                  });
+                                                },
+                                                child: Row(children: [
+                                                  const SizedBox(width: 0.5),
+                                                  Container(
+                                                      height:
+                                                          Random().nextInt(37) +
+                                                              64,
+                                                      width: bookWidth,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          vertical: 5,
+                                                          horizontal: 0.5),
+                                                      decoration: BoxDecoration(
+                                                        color: bookshelfColors[
+                                                            shelfIndex * 11 +
+                                                                index],
+                                                      ),
+                                                      child: RotatedBox(
+                                                          quarterTurns: 1,
+                                                          child: FittedBox(
+                                                            alignment: Alignment
+                                                                .centerLeft,
+                                                            fit: BoxFit.contain,
+                                                            child: Text(bookIds[
+                                                                shelfIndex *
+                                                                        11 +
+                                                                    index]),
+                                                          )))
+                                                ])));
                                       },
-                                      child: Row(children: [
-                                        Container(
-                                            height: Random().nextInt(37) + 64,
-                                            width: 26.3,
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 5, horizontal: 0.5),
-                                            decoration: BoxDecoration(
-                                              color: bookshelfColors[index],
-                                            ),
-                                            child: RotatedBox(
-                                                quarterTurns: 1,
-                                                child: FittedBox(
-                                                  alignment:
-                                                      Alignment.centerLeft,
-                                                  fit: BoxFit.contain,
-                                                  child: Text(bookIds[index]),
-                                                )))
-                                      ])));
-                            },
-                          ),
-                        ),
-                        Container(
-                          color: lightBrownEdgeShelf,
-                          width: double.maxFinite,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 0,
-                            vertical: 8,
-                          ),
-                        ),
-                        const SizedBox(height: 336)
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(height: 6)
+                                    ),
+                                  ),
+                                  Container(
+                                    color: lightBrownEdgeShelf,
+                                    width: double.maxFinite,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 0,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }))
+                  ],
+                )),
           ],
         ),
       ),
     )));
   }
-
-  /*
-                        Container(
-                          width: double.maxFinite,
-                          margin: const EdgeInsets.only(left: 2),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.of(context, rootNavigator: true)
-                                          .push(PageRouteBuilder(
-                                              pageBuilder: (context, x, xx) =>
-                                                  const BookInfoPage(),
-                                              transitionDuration: Duration.zero,
-                                              reverseTransitionDuration:
-                                                  Duration.zero));
-                                    },
-                                    child: Container(
-                                        height: 94,
-                                        width: 24,
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 5, horizontal: 0.5),
-                                        decoration: BoxDecoration(
-                                          color: lightPinkBook,
-                                        ),
-                                        child: RotatedBox(
-                                            quarterTurns: 1,
-                                            child: FittedBox(
-                                              alignment: Alignment.centerLeft,
-                                              fit: BoxFit.contain,
-                                              child: Text(bookIds[bookIdIndex]),
-                                            ))),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  height: 74,
-                                  width: 24,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 5, horizontal: 0.5),
-                                  decoration: BoxDecoration(
-                                    color: darkPinkBook,
-                                  ),
-                                  child: const RotatedBox(
-                                      quarterTurns: 1,
-                                      child: FittedBox(
-                                        alignment: Alignment.centerLeft,
-                                        fit: BoxFit.contain,
-                                        child: Text('nisifhisuhfsi'),
-                                      )),
-                                ),
-                              ),
-                      
-                            ],
-                          ),
-                        ),
-                        UnconstrainedBox(
-                          child: Container(
-                            color: lightBrownEdgeShelf,
-                            width: overflowWidth,
-                            height: 15,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        */
-
-/*
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 246, 190, 85),
-          title: const Text("Your bookshelf"),
-        ),
-        body: Column(children: [
-          Expanded(
-            child: FutureBuilder(
-                future: getBooks(),
-                builder: (context, querySnapshot) {
-                  if (querySnapshot.connectionState == ConnectionState.done) {
-                    return ListView.builder(
-                        itemCount: querySnapshot.data?.docs.length ?? 0,
-                        itemBuilder: (BuildContext context, index) {
-                          return ListTile(
-                              title: Text(querySnapshot.data!.docs[index]
-                                  .data()
-                                  .toString()));
-                        });
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                }),
-          ),
-        ]));
-  }
-  */
 }
