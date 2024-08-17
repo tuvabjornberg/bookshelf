@@ -26,6 +26,7 @@ class BookShelf extends StatefulWidget {
 }
 
 class _BookShelfState extends State<BookShelf> {
+  List<String> standardBookIds = [];
   List<String> bookIds = [];
   List<Color> bookshelfColors = [];
 
@@ -53,13 +54,12 @@ class _BookShelfState extends State<BookShelf> {
         .then(
       (documentSnapshot) {
         print("Successfully completed fetch basicBookshelfInfo");
-        print(documentSnapshot.id);
-        print(documentSnapshot.data());
-
         documentSnapshot.data()?.forEach((k, v) => addIdsColors(k, v));
       },
       onError: (e) => print("Error completing: $e"),
     );
+
+    standardBookIds.addAll(bookIds);
 
     setState(() {});
   }
@@ -112,6 +112,34 @@ class _BookShelfState extends State<BookShelf> {
                 onChanged: (SortingMethod? sortingMethod) {
                   setState(() {
                     selectedSortingMethod = sortingMethod;
+
+                    switch (selectedSortingMethod) {
+                      case SortingMethod.standard:
+                        bookIds = standardBookIds;
+                        break;
+                      case SortingMethod.alphTitle:
+                        //Alphabetical sort
+                        bookIds.sort();
+                        break;
+                      case SortingMethod.alphAuthor:
+                        //TODO:
+                        break;
+                      case SortingMethod.dateRecent:
+                        //TODO:
+                        break;
+                      case SortingMethod.dateOld:
+                        //TODO:
+                        break;
+                      case SortingMethod.ratingHigh:
+                        //TODO:
+                        break;
+                      case SortingMethod.ratingLow:
+                        //TODO:
+                        break;
+                      default:
+                        bookIds = standardBookIds;
+                        break;
+                    }
                   });
                 },
                 items:
