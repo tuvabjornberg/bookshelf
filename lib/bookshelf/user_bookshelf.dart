@@ -5,6 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum SortingMethod {
+  standard('Standard'),
+  alphTitle('A-Z Titles'),
+  alphAuthor('A-Z Authors'),
+  dateRecent('Date, most recent'),
+  dateOld('Date, least recent'),
+  ratingHigh('Highest rating'),
+  ratingLow('Lowest rating');
+
+  const SortingMethod(this.label);
+  final String label;
+}
+
 class BookShelf extends StatefulWidget {
   const BookShelf({super.key});
 
@@ -17,6 +30,9 @@ class _BookShelfState extends State<BookShelf> {
   List<Color> bookshelfColors = [];
 
   int bookIndexDB = 0;
+
+  final TextEditingController sortingController = TextEditingController();
+  SortingMethod? selectedSortingMethod = SortingMethod.standard;
 
   void addIdsColors(String id, int color) {
     bookIds.add(id);
@@ -88,6 +104,28 @@ class _BookShelfState extends State<BookShelf> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Container(
+              alignment: Alignment.topRight,
+              child: DropdownButton<SortingMethod>(
+                value: selectedSortingMethod,
+                icon: const Icon(Icons.sort_rounded),
+                onChanged: (SortingMethod? sortingMethod) {
+                  setState(() {
+                    selectedSortingMethod = sortingMethod;
+                  });
+                },
+                items:
+                    SortingMethod.values.map<DropdownMenuItem<SortingMethod>>(
+                  (SortingMethod method) {
+                    return DropdownMenuItem<SortingMethod>(
+                      value: method,
+                      child: Text(method.label),
+                    );
+                  },
+                ).toList(),
+              ),
+            ),
+            const SizedBox(),
             Container(
                 width: double.maxFinite,
                 padding: const EdgeInsets.all(10),
