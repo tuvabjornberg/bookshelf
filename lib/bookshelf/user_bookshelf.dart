@@ -30,6 +30,8 @@ class _BookShelfState extends State<BookShelf> {
   List<String> bookIds = [];
   List<Color> bookshelfColors = [];
 
+  Map<String, dynamic> completeBookData = {};
+
   int bookIndexDB = 0;
 
   final TextEditingController sortingController = TextEditingController();
@@ -62,6 +64,38 @@ class _BookShelfState extends State<BookShelf> {
     standardBookIds.addAll(bookIds);
 
     setState(() {});
+  }
+
+  Future<void> getAllData() async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    const source = Source.cache;
+
+    await db
+        .collection('users')
+        .doc('ArXYsUX9UaW5oORBejfd')
+        .collection('books')
+        .get(const GetOptions(source: source))
+        .then(
+      (querySnapshot) {
+        print("Successfully completed fetch all data");
+        for (var docSnapshot in querySnapshot.docs) {
+          completeBookData[docSnapshot.id] = docSnapshot.data();
+        }
+      },
+      onError: (e) => print("Error completing: $e"),
+    );
+
+    completeBookData.remove('basicBookshelfInfo');
+
+    setState(() {});
+  }
+
+  List<String> sortAuthor() {
+    var sortedKeys = Map.fromEntries(completeBookData.entries.toList()
+      ..sort(((e1, e2) => e1.value['author'].compareTo(e2.value['author']))));
+
+    return sortedKeys.keys.toList();
   }
 
   @override
@@ -109,38 +143,39 @@ class _BookShelfState extends State<BookShelf> {
               child: DropdownButton<SortingMethod>(
                 value: selectedSortingMethod,
                 icon: const Icon(Icons.sort_rounded),
-                onChanged: (SortingMethod? sortingMethod) {
-                  setState(() {
-                    selectedSortingMethod = sortingMethod;
+                onChanged: (SortingMethod? sortingMethod) async {
+                  selectedSortingMethod = sortingMethod;
 
-                    switch (selectedSortingMethod) {
-                      case SortingMethod.standard:
-                        bookIds = standardBookIds;
-                        break;
-                      case SortingMethod.alphTitle:
-                        //Alphabetical sort
-                        bookIds.sort();
-                        break;
-                      case SortingMethod.alphAuthor:
-                        //TODO:
-                        break;
-                      case SortingMethod.dateRecent:
-                        //TODO:
-                        break;
-                      case SortingMethod.dateOld:
-                        //TODO:
-                        break;
-                      case SortingMethod.ratingHigh:
-                        //TODO:
-                        break;
-                      case SortingMethod.ratingLow:
-                        //TODO:
-                        break;
-                      default:
-                        bookIds = standardBookIds;
-                        break;
-                    }
-                  });
+                  switch (selectedSortingMethod) {
+                    case SortingMethod.standard:
+                      bookIds = standardBookIds;
+                      break;
+                    case SortingMethod.alphTitle:
+                      //Alphabetical sort titles
+                      bookIds.sort();
+                      break;
+                    case SortingMethod.alphAuthor:
+                      //Alphabetical sort authors
+                      await getAllData();
+                      bookIds = sortAuthor();
+                      break;
+                    case SortingMethod.dateRecent:
+                      //TODO:
+                      break;
+                    case SortingMethod.dateOld:
+                      //TODO:
+                      break;
+                    case SortingMethod.ratingHigh:
+                      //TODO:
+                      break;
+                    case SortingMethod.ratingLow:
+                      //TODO:
+                      break;
+                    default:
+                      bookIds = standardBookIds;
+                      break;
+                  }
+                  setState(() {});
                 },
                 items:
                     SortingMethod.values.map<DropdownMenuItem<SortingMethod>>(
