@@ -4,19 +4,7 @@ import 'package:bookshelf/bookshelf/book_info_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-enum SortingMethod {
-  standard('Standard'),
-  alphTitle('A-Z Titles'),
-  alphAuthor('A-Z Authors'),
-  dateRecent('Date, most recent'),
-  dateOld('Date, least recent'),
-  ratingHigh('Highest rating'),
-  ratingLow('Lowest rating');
-
-  const SortingMethod(this.label);
-  final String label;
-}
+import 'package:bookshelf/bookshelf/sorting.dart';
 
 class BookShelf extends StatefulWidget {
   const BookShelf({super.key});
@@ -31,11 +19,12 @@ class _BookShelfState extends State<BookShelf> {
   List<Color> bookshelfColors = [];
 
   Map<String, dynamic> completeBookData = {};
+  bool fetchedData = false;
 
   int bookIndexDB = 0;
 
   final TextEditingController sortingController = TextEditingController();
-  SortingMethod? selectedSortingMethod = SortingMethod.standard;
+  SortingMethod selectedSortingMethod = SortingMethod.standard;
 
   void addIdsColors(String id, int color) {
     bookIds.add(id);
@@ -87,15 +76,9 @@ class _BookShelfState extends State<BookShelf> {
     );
 
     completeBookData.remove('basicBookshelfInfo');
+    fetchedData = true;
 
     setState(() {});
-  }
-
-  List<String> sortAuthor() {
-    var sortedKeys = Map.fromEntries(completeBookData.entries.toList()
-      ..sort(((e1, e2) => e1.value['author'].compareTo(e2.value['author']))));
-
-    return sortedKeys.keys.toList();
   }
 
   @override
@@ -144,7 +127,7 @@ class _BookShelfState extends State<BookShelf> {
                 value: selectedSortingMethod,
                 icon: const Icon(Icons.sort_rounded),
                 onChanged: (SortingMethod? sortingMethod) async {
-                  selectedSortingMethod = sortingMethod;
+                  selectedSortingMethod = sortingMethod!;
 
                   switch (selectedSortingMethod) {
                     case SortingMethod.standard:
@@ -156,8 +139,10 @@ class _BookShelfState extends State<BookShelf> {
                       break;
                     case SortingMethod.alphAuthor:
                       //Alphabetical sort authors
-                      await getAllData();
-                      bookIds = sortAuthor();
+                      if (!fetchedData) {
+                        await getAllData();
+                      }
+                      bookIds = sortAuthor(completeBookData);
                       break;
                     case SortingMethod.dateRecent:
                       //TODO:
@@ -166,10 +151,18 @@ class _BookShelfState extends State<BookShelf> {
                       //TODO:
                       break;
                     case SortingMethod.ratingHigh:
-                      //TODO:
+                      //Sort based on highest rating
+                      if (!fetchedData) {
+                        await getAllData();
+                      }
+                      bookIds = sortRating(completeBookData, true);
                       break;
                     case SortingMethod.ratingLow:
-                      //TODO:
+                      //Sort based on lowest rating
+                      if (!fetchedData) {
+                        await getAllData();
+                      }
+                      bookIds = sortRating(completeBookData, false);
                       break;
                     default:
                       bookIds = standardBookIds;
