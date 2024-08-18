@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:bookshelf/bookshelf/book.dart';
 
 class BookInfoPage extends StatefulWidget {
-  final String bookTitle;
-  final Color bookColor;
-
-  const BookInfoPage(
-      {super.key, required this.bookTitle, required this.bookColor});
+  final Book book;
+  const BookInfoPage({super.key, required this.book});
 
   @override
   State<BookInfoPage> createState() => _BookInfoPageState();
@@ -19,7 +17,7 @@ class _BookInfoPageState extends State<BookInfoPage> {
   late DocumentSnapshot<Map<String, dynamic>> cachedBookInfo;
 
   bool colorChangeFlag = false;
-  late Color pickerColor = widget.bookColor;
+  late Color pickerColor = widget.book.color;
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getBookInfo() async {
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -31,7 +29,7 @@ class _BookInfoPageState extends State<BookInfoPage> {
         .collection('users')
         .doc('ArXYsUX9UaW5oORBejfd')
         .collection('books')
-        .doc(widget.bookTitle)
+        .doc(widget.book.title)
         .get(const GetOptions(source: source));
 
     return cachedBookInfo;
@@ -42,7 +40,7 @@ class _BookInfoPageState extends State<BookInfoPage> {
         .collection('users')
         .doc('ArXYsUX9UaW5oORBejfd')
         .collection('books')
-        .doc(widget.bookTitle);
+        .doc(widget.book.title);
 
     updateBook
         .update({'color': pickerColor.value})
@@ -56,7 +54,7 @@ class _BookInfoPageState extends State<BookInfoPage> {
         .doc('basicBookshelfInfo');
 
     updateBasicColor
-        .update({widget.bookTitle: pickerColor.value})
+        .update({widget.book.title: pickerColor.value})
         .then((value) => print("basicBookshelfInfo color updated"))
         .catchError((error) =>
             print("Failed to update color in basicBookshelfInfo: $error"));
@@ -107,7 +105,7 @@ class _BookInfoPageState extends State<BookInfoPage> {
       );
     }
 
-    Future<DocumentSnapshot<Map<String, dynamic>>> fetchCachedBooks() async {
+    Future<DocumentSnapshot<Map<String, dynamic>>> fetchCachedBook() async {
       return cachedBookInfo;
     }
 
@@ -120,10 +118,19 @@ class _BookInfoPageState extends State<BookInfoPage> {
         ),
         body: SingleChildScrollView(
             child: FutureBuilder(
-                future: colorChangeFlag ? fetchCachedBooks() : getBookInfo(),
+                future: colorChangeFlag || widget.book.author != ''
+                    ? fetchCachedBook()
+                    : getBookInfo(),
                 builder: (context, docSnapshot) {
                   if (docSnapshot.connectionState == ConnectionState.done) {
-                    bookInfo.addEntries(docSnapshot.data!.data()!.entries);
+                    if (widget.book.author != '') {
+                      bookInfo['title'] = widget.book.title;
+                      bookInfo['author'] = widget.book.author;
+                      bookInfo['rating'] = widget.book.rating;
+                      bookInfo['date'] = widget.book.date;
+                    } else {
+                      bookInfo.addEntries(docSnapshot.data!.data()!.entries);
+                    }
 
                     return Column(
                       children: [

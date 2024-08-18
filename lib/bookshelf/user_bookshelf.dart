@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bookshelf/bookshelf/sorting.dart';
+import 'package:bookshelf/bookshelf/book.dart';
 
 class BookShelf extends StatefulWidget {
   const BookShelf({super.key});
@@ -219,21 +220,27 @@ class _BookShelfState extends State<BookShelf> {
                                             alignment: Alignment.bottomLeft,
                                             child: GestureDetector(
                                                 onTap: () async {
-                                                  final returnedColor = await Navigator.of(
-                                                          context,
-                                                          rootNavigator: true)
-                                                      .push(PageRouteBuilder(
-                                                          pageBuilder: (context, x, xx) => BookInfoPage(
-                                                              bookTitle: bookIds[
-                                                                  shelfIndex * 11 +
-                                                                      index],
-                                                              bookColor: (bookshelfColors[
-                                                                  shelfIndex * 11 +
-                                                                      index])),
-                                                          transitionDuration:
-                                                              Duration.zero,
-                                                          reverseTransitionDuration:
-                                                              Duration.zero));
+                                                  String title = bookIds[
+                                                      shelfIndex * 11 + index];
+
+                                                  final returnedColor = await Navigator.of(context, rootNavigator: true).push(PageRouteBuilder(
+                                                      pageBuilder: (context, x, xx) => fetchedData
+                                                          ? BookInfoPage(
+                                                              book: Book(
+                                                                  title: title,
+                                                                  author: completeBookData[title]
+                                                                      [
+                                                                      'author'],
+                                                                  date: completeBookData[title]
+                                                                      ['date'],
+                                                                  color: bookshelfColors[
+                                                                      shelfIndex * 11 +
+                                                                          index],
+                                                                  rating: completeBookData[title]
+                                                                      ['rating']))
+                                                          : BookInfoPage(book: Book(title: title, color: bookshelfColors[shelfIndex * 11 + index])),
+                                                      transitionDuration: Duration.zero,
+                                                      reverseTransitionDuration: Duration.zero));
                                                   setState(() {
                                                     bookshelfColors[shelfIndex *
                                                             11 +
