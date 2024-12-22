@@ -1,3 +1,4 @@
+import 'package:bookshelf/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -131,8 +132,8 @@ class _AddBookState extends State<AddBook> {
                               child: TextFormField(
                                 controller: monthController,
                                 key: const ValueKey('in_month_field'),
-                                decoration:
-                                    const InputDecoration(labelText: 'Month'),
+                                decoration: const InputDecoration(
+                                    labelText: 'Month', hintText: '1-12'),
                                 keyboardType: TextInputType.number,
                                 onChanged: (value) {
                                   setState(() {
@@ -142,6 +143,10 @@ class _AddBookState extends State<AddBook> {
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter a month';
+                                  }
+                                  if (int.tryParse(value)! > 12 ||
+                                      int.tryParse(value)! < 1) {
+                                    return 'Enter a valid month 1-12';
                                   }
                                   return null;
                                 },
@@ -165,6 +170,13 @@ class _AddBookState extends State<AddBook> {
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter a year';
+                                  }
+                                  int? intValue = int.tryParse(value);
+                                  if (intValue! > DATENOW.year ||
+                                      intValue < 1900 ||
+                                      (intValue < DATENOW.year &&
+                                          month > DATENOW.month)) {
+                                    return 'Enter a valid year';
                                   }
                                   return null;
                                 },
