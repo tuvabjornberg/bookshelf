@@ -7,6 +7,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+final DATENOW = DateTime.now();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

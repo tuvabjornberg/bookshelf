@@ -4,6 +4,8 @@ import 'package:bookshelf/bookshelf/book_info_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:bookshelf/bookshelf/sorting.dart';
+import 'package:bookshelf/bookshelf/book.dart';
 
 class BookShelf extends StatefulWidget {
   const BookShelf({super.key});
@@ -13,10 +15,17 @@ class BookShelf extends StatefulWidget {
 }
 
 class _BookShelfState extends State<BookShelf> {
+  List<String> standardBookIds = [];
   List<String> bookIds = [];
   List<Color> bookshelfColors = [];
 
+  Map<String, dynamic> completeBookData = {};
+  bool fetchedData = false;
+
   int bookIndexDB = 0;
+
+  final TextEditingController sortingController = TextEditingController();
+  SortingMethod selectedSortingMethod = SortingMethod.standard;
 
   void addIdsColors(String id, int color) {
     bookIds.add(id);
@@ -37,13 +46,38 @@ class _BookShelfState extends State<BookShelf> {
         .then(
       (documentSnapshot) {
         print("Successfully completed fetch basicBookshelfInfo");
-        print(documentSnapshot.id);
-        print(documentSnapshot.data());
-
         documentSnapshot.data()?.forEach((k, v) => addIdsColors(k, v));
       },
       onError: (e) => print("Error completing: $e"),
     );
+
+    standardBookIds.addAll(bookIds);
+
+    setState(() {});
+  }
+
+  Future<void> getAllData() async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    const source = Source.cache;
+
+    await db
+        .collection('users')
+        .doc('ArXYsUX9UaW5oORBejfd')
+        .collection('books')
+        .get(const GetOptions(source: source))
+        .then(
+      (querySnapshot) {
+        print("Successfully completed fetch all data");
+        for (var docSnapshot in querySnapshot.docs) {
+          completeBookData[docSnapshot.id] = docSnapshot.data();
+        }
+      },
+      onError: (e) => print("Error completing: $e"),
+    );
+
+    completeBookData.remove('basicBookshelfInfo');
+    fetchedData = true;
 
     setState(() {});
   }
@@ -89,6 +123,73 @@ class _BookShelfState extends State<BookShelf> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
+              alignment: Alignment.topRight,
+              child: DropdownButton<SortingMethod>(
+                value: selectedSortingMethod,
+                icon: const Icon(Icons.sort_rounded),
+                onChanged: (SortingMethod? sortingMethod) async {
+                  selectedSortingMethod = sortingMethod!;
+
+                  switch (selectedSortingMethod) {
+                    case SortingMethod.standard:
+                      bookIds = standardBookIds;
+                      break;
+                    case SortingMethod.alphTitle:
+                      //Alphabetical sort titles
+                      bookIds.sort();
+                      break;
+                    case SortingMethod.alphAuthor:
+                      //Alphabetical sort authors
+                      if (!fetchedData) {
+                        await getAllData();
+                      }
+                      bookIds = sortAuthor(completeBookData);
+                      break;
+                    case SortingMethod.dateRecent:
+                      if (!fetchedData) {
+                        await getAllData();
+                      }
+                      bookIds = sortDate(completeBookData, true);
+                      break;
+                    case SortingMethod.dateOld:
+                      if (!fetchedData) {
+                        await getAllData();
+                      }
+                      bookIds = sortDate(completeBookData, false);
+                      break;
+                    case SortingMethod.ratingHigh:
+                      //Sort based on highest rating
+                      if (!fetchedData) {
+                        await getAllData();
+                      }
+                      bookIds = sortRating(completeBookData, true);
+                      break;
+                    case SortingMethod.ratingLow:
+                      //Sort based on lowest rating
+                      if (!fetchedData) {
+                        await getAllData();
+                      }
+                      bookIds = sortRating(completeBookData, false);
+                      break;
+                    default:
+                      bookIds = standardBookIds;
+                      break;
+                  }
+                  setState(() {});
+                },
+                items:
+                    SortingMethod.values.map<DropdownMenuItem<SortingMethod>>(
+                  (SortingMethod method) {
+                    return DropdownMenuItem<SortingMethod>(
+                      value: method,
+                      child: Text(method.label),
+                    );
+                  },
+                ).toList(),
+              ),
+            ),
+            const SizedBox(),
+            Container(
                 width: double.maxFinite,
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -125,21 +226,27 @@ class _BookShelfState extends State<BookShelf> {
                                             alignment: Alignment.bottomLeft,
                                             child: GestureDetector(
                                                 onTap: () async {
-                                                  final returnedColor = await Navigator.of(
-                                                          context,
-                                                          rootNavigator: true)
-                                                      .push(PageRouteBuilder(
-                                                          pageBuilder: (context, x, xx) => BookInfoPage(
-                                                              bookTitle: bookIds[
-                                                                  shelfIndex * 11 +
-                                                                      index],
-                                                              bookColor: (bookshelfColors[
-                                                                  shelfIndex * 11 +
-                                                                      index])),
-                                                          transitionDuration:
-                                                              Duration.zero,
-                                                          reverseTransitionDuration:
-                                                              Duration.zero));
+                                                  String title = bookIds[
+                                                      shelfIndex * 11 + index];
+
+                                                  final returnedColor = await Navigator.of(context, rootNavigator: true).push(PageRouteBuilder(
+                                                      pageBuilder: (context, x, xx) => fetchedData
+                                                          ? BookInfoPage(
+                                                              book: Book(
+                                                                  title: title,
+                                                                  author: completeBookData[title]
+                                                                      [
+                                                                      'author'],
+                                                                  date: completeBookData[title]
+                                                                      ['date'],
+                                                                  color: bookshelfColors[
+                                                                      shelfIndex * 11 +
+                                                                          index],
+                                                                  rating: completeBookData[title]
+                                                                      ['rating']))
+                                                          : BookInfoPage(book: Book(title: title, color: bookshelfColors[shelfIndex * 11 + index])),
+                                                      transitionDuration: Duration.zero,
+                                                      reverseTransitionDuration: Duration.zero));
                                                   setState(() {
                                                     bookshelfColors[shelfIndex *
                                                             11 +

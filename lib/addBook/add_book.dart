@@ -1,3 +1,4 @@
+import 'package:bookshelf/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,7 +6,7 @@ import 'dart:math';
 
 class AddBook extends StatefulWidget {
   const AddBook({super.key});
-  
+
   @override
   State<AddBook> createState() => _AddBookState();
 }
@@ -92,6 +93,7 @@ class _AddBookState extends State<AddBook> {
                       children: <Widget>[
                         TextFormField(
                           controller: titleController,
+                          key: const ValueKey('in_title_field'),
                           decoration: const InputDecoration(labelText: 'Title'),
                           keyboardType: TextInputType.name,
                           onChanged: (value) {
@@ -99,9 +101,16 @@ class _AddBookState extends State<AddBook> {
                               title = value;
                             });
                           },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a title';
+                            }
+                            return null;
+                          },
                         ),
                         TextFormField(
                           controller: authorController,
+                          key: const ValueKey('in_author_field'),
                           decoration:
                               const InputDecoration(labelText: 'Author'),
                           keyboardType: TextInputType.name,
@@ -110,19 +119,36 @@ class _AddBookState extends State<AddBook> {
                               author = value;
                             });
                           },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter an author';
+                            }
+                            return null;
+                          },
                         ),
                         Row(
                           children: [
                             Expanded(
                               child: TextFormField(
                                 controller: monthController,
-                                decoration:
-                                    const InputDecoration(labelText: 'Month'),
+                                key: const ValueKey('in_month_field'),
+                                decoration: const InputDecoration(
+                                    labelText: 'Month', hintText: '1-12'),
                                 keyboardType: TextInputType.number,
                                 onChanged: (value) {
                                   setState(() {
                                     month = int.tryParse(value) ?? month;
                                   });
+                                },
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter a month';
+                                  }
+                                  if (int.tryParse(value)! > 12 ||
+                                      int.tryParse(value)! < 1) {
+                                    return 'Enter a valid month 1-12';
+                                  }
+                                  return null;
                                 },
                               ),
                             ),
@@ -132,6 +158,7 @@ class _AddBookState extends State<AddBook> {
                             Expanded(
                               child: TextFormField(
                                 controller: yearController,
+                                key: const ValueKey('in_year_field'),
                                 decoration:
                                     const InputDecoration(labelText: 'Year'),
                                 keyboardType: TextInputType.number,
@@ -139,6 +166,19 @@ class _AddBookState extends State<AddBook> {
                                   setState(() {
                                     year = int.tryParse(value) ?? year;
                                   });
+                                },
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter a year';
+                                  }
+                                  int? intValue = int.tryParse(value);
+                                  if (intValue! > DATENOW.year ||
+                                      intValue < 1900 ||
+                                      (intValue < DATENOW.year &&
+                                          month > DATENOW.month)) {
+                                    return 'Enter a valid year';
+                                  }
+                                  return null;
                                 },
                               ),
                             ),
@@ -163,11 +203,21 @@ class _AddBookState extends State<AddBook> {
                           foregroundColor:
                               const Color.fromARGB(255, 241, 135, 70),
                           onPressed: () {
-                            _submit();
-                            titleController.clear();
-                            authorController.clear();
-                            monthController.clear();
-                            yearController.clear();
+                            if (_formKey.currentState!.validate()) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Adding book'),
+                                  backgroundColor:
+                                      Color.fromARGB(255, 241, 135, 70),
+                                ),
+                              );
+
+                              _submit();
+                              titleController.clear();
+                              authorController.clear();
+                              monthController.clear();
+                              yearController.clear();
+                            }
                           },
                           child: const Icon(Icons.add),
                         ),
