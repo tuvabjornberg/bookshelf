@@ -5,7 +5,7 @@ import 'dart:math';
 
 class AddBook extends StatefulWidget {
   const AddBook({super.key});
-  
+
   @override
   State<AddBook> createState() => _AddBookState();
 }
@@ -92,6 +92,7 @@ class _AddBookState extends State<AddBook> {
                       children: <Widget>[
                         TextFormField(
                           controller: titleController,
+                          key: const ValueKey('in_title_field'),
                           decoration: const InputDecoration(labelText: 'Title'),
                           keyboardType: TextInputType.name,
                           onChanged: (value) {
@@ -99,9 +100,16 @@ class _AddBookState extends State<AddBook> {
                               title = value;
                             });
                           },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a title';
+                            }
+                            return null;
+                          },
                         ),
                         TextFormField(
                           controller: authorController,
+                          key: const ValueKey('in_author_field'),
                           decoration:
                               const InputDecoration(labelText: 'Author'),
                           keyboardType: TextInputType.name,
@@ -110,12 +118,19 @@ class _AddBookState extends State<AddBook> {
                               author = value;
                             });
                           },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter an author';
+                            }
+                            return null;
+                          },
                         ),
                         Row(
                           children: [
                             Expanded(
                               child: TextFormField(
                                 controller: monthController,
+                                key: const ValueKey('in_month_field'),
                                 decoration:
                                     const InputDecoration(labelText: 'Month'),
                                 keyboardType: TextInputType.number,
@@ -123,6 +138,12 @@ class _AddBookState extends State<AddBook> {
                                   setState(() {
                                     month = int.tryParse(value) ?? month;
                                   });
+                                },
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter a month';
+                                  }
+                                  return null;
                                 },
                               ),
                             ),
@@ -132,6 +153,7 @@ class _AddBookState extends State<AddBook> {
                             Expanded(
                               child: TextFormField(
                                 controller: yearController,
+                                key: const ValueKey('in_year_field'),
                                 decoration:
                                     const InputDecoration(labelText: 'Year'),
                                 keyboardType: TextInputType.number,
@@ -139,6 +161,12 @@ class _AddBookState extends State<AddBook> {
                                   setState(() {
                                     year = int.tryParse(value) ?? year;
                                   });
+                                },
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter a year';
+                                  }
+                                  return null;
                                 },
                               ),
                             ),
@@ -163,11 +191,21 @@ class _AddBookState extends State<AddBook> {
                           foregroundColor:
                               const Color.fromARGB(255, 241, 135, 70),
                           onPressed: () {
-                            _submit();
-                            titleController.clear();
-                            authorController.clear();
-                            monthController.clear();
-                            yearController.clear();
+                            if (_formKey.currentState!.validate()) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Adding book'),
+                                  backgroundColor:
+                                      Color.fromARGB(255, 241, 135, 70),
+                                ),
+                              );
+
+                              _submit();
+                              titleController.clear();
+                              authorController.clear();
+                              monthController.clear();
+                              yearController.clear();
+                            }
                           },
                           child: const Icon(Icons.add),
                         ),
