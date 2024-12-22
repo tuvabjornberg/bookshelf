@@ -146,10 +146,16 @@ class _BookShelfState extends State<BookShelf> {
                       bookIds = sortAuthor(completeBookData);
                       break;
                     case SortingMethod.dateRecent:
-                      //TODO:
+                      if (!fetchedData) {
+                        await getAllData();
+                      }
+                      bookIds = sortDate(completeBookData, true);
                       break;
                     case SortingMethod.dateOld:
-                      //TODO:
+                      if (!fetchedData) {
+                        await getAllData();
+                      }
+                      bookIds = sortDate(completeBookData, false);
                       break;
                     case SortingMethod.ratingHigh:
                       //Sort based on highest rating
